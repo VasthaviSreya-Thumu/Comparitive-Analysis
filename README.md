@@ -13,6 +13,16 @@ It includes:
 - Implementations for Search, RNG, and Tic-Tac-Toe game simulation
 - Monitoring and result-export utilities
 
+What this project is:
+
+- A benchmarking/experimental application
+- Run as a CLI tool (`main.py`) or interactive dashboard (`app.py`)
+
+What this project is not:
+
+- Not a long-running backend service/API by default
+- Not an ML model training or inference repository
+
 ## What The Repository Contains
 
 ### Top-level files
@@ -123,6 +133,15 @@ Important:
   - `results/charts/`
 
 ## How To Run
+
+Quick start (uses defaults):
+
+```bash
+python main.py
+```
+
+By default this runs the `search` comparison with default size (`1000`).  
+Use flags only when you want to switch algorithm or override defaults.
 
 ### 1) CLI mode (`main.py`)
 
@@ -266,6 +285,49 @@ pip install -r requirements.txt
 2. Run `python main.py --algorithm search --size 1000` to validate setup.
 3. Launch `streamlit run app.py` for interactive analysis.
 4. Review generated JSON in `results/` and sample artifacts in `results/data/`.
+
+## Team Collaboration Workflow (Git)
+
+When multiple people are working on this repo, do not push direct changes to `main`.  
+Use a feature branch and raise a pull request.
+
+1. Update local `main`:
+
+```bash
+git checkout main
+git pull origin main
+```
+
+2. Create a branch from `main`:
+
+```bash
+git checkout -b feature/<short-description>
+```
+
+3. Make your changes, then commit:
+
+```bash
+git add .
+git commit -m "Describe your change"
+```
+
+4. Push the branch:
+
+```bash
+git push -u origin feature/<short-description>
+```
+
+5. Open a Pull Request:
+
+- Create a PR from `feature/<short-description>` -> `main`
+- Ask for review before merge
+- Merge only after approvals/checks pass
+
+Why this helps:
+
+- Keeps `main` stable
+- Reduces merge conflicts
+- Makes changes easier to review and track
 
 ## Notes On Profiling Document
 
