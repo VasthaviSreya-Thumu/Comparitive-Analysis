@@ -18,6 +18,8 @@ build/
 *~
 .env
 .env.*
+.venv
+.venv.*
 !.env.example
 
 # Data and results
