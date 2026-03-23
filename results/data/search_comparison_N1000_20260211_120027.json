@@ -1,0 +1,76 @@
+{
+  "database_info": {
+    "size": 1000,
+    "target": -1,
+    "target_position": 615,
+    "memory_mb": 0.003814697265625
+  },
+  "platforms": {
+    "CPU": {
+      "platform": "CPU",
+      "algorithm": "Linear Search",
+      "complexity": "O(N)",
+      "found": true,
+      "found_position": 615,
+      "iterations": 616,
+      "search_time": 0.0,
+      "start_memory_mb": 324.671875,
+      "end_memory_mb": 324.671875,
+      "peak_memory_mb": 324.671875,
+      "memory_used_mb": 0.0,
+      "database_size": 1000,
+      "items_per_second": 0,
+      "success": true
+    },
+    "GPU": {
+      "platform": "CPU (fallback)",
+      "algorithm": "Parallel Search",
+      "complexity": "O(N/P)",
+      "found": true,
+      "found_position": 615,
+      "search_time": 0.06423521041870117,
+      "start_memory_mb": 0,
+      "end_memory_mb": 0,
+      "peak_memory_mb": 0,
+      "memory_used_mb": 0,
+      "database_size": 1000,
+      "items_per_second": 15567.785852677212,
+      "cuda_available": false,
+      "device": "cpu",
+      "success": true
+    },
+    "QPU": {
+      "platform": "QPU",
+      "algorithm": "Grover's Search",
+      "complexity": "O(\u221aN)",
+      "found": true,
+      "found_position": 615,
+      "target_position": 615,
+      "success_probability": 1.0,
+      "search_time": 3.585526466369629,
+      "database_size": 1000,
+      "adjusted_size": 1024,
+      "num_qubits": 10,
+      "circuit_depth": 52,
+      "gate_count": 121,
+      "grover_iterations": 25,
+      "theoretical_iterations": 25,
+      "shots": 1024,
+      "backend": "simulator",
+      "use_real_qpu": false,
+      "quantum_speedup_factor": 1.28,
+      "success": true
+    }
+  },
+  "analysis": {
+    "speedups": {
+      "GPU": 0.0,
+      "QPU": 0.0
+    },
+    "theoretical_complexity": {
+      "CPU": "O(N)",
+      "GPU": "O(N/P)",
+      "QPU": "O(\u221aN)"
+    }
+  }
+}

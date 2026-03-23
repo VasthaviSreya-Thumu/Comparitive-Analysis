@@ -1,0 +1,41 @@
+# Add these to .gitignore
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+dist/
+build/
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Data and results
+data/cifar-10-batches-py/
+data/cifar-10-python.tar.gz
+data/MNIST/
+data/FashionMNIST/
+results/logs/*.log
+results/logs/*.csv
+results/logs/*.json
+results/charts/*.png
+results/reports/*.txt
+*.pth
+*.pt
+*.ckpt
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/

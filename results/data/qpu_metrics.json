@@ -1,0 +1,129 @@
+{
+  "metrics": {
+    "circuit_depth": [
+      6.0,
+      6.0,
+      8.0
+    ],
+    "gate_count": [
+      15.0,
+      10.0,
+      20.0
+    ],
+    "qubit_count": [
+      3.0,
+      5.0,
+      4.0
+    ],
+    "execution_time": [
+      0.5222821235656738,
+      0.12801861763000488,
+      0.9430725574493408
+    ],
+    "queue_time": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "success_rate": [
+      0.9443359375
+    ],
+    "shots": [
+      1024.0,
+      1024.0,
+      1024.0
+    ]
+  },
+  "statistics": {
+    "circuit_depth": {
+      "mean": 6.666666666666667,
+      "std": 0.9428090415820634,
+      "min": 6.0,
+      "max": 8.0,
+      "total": null
+    },
+    "gate_count": {
+      "mean": 15.0,
+      "std": 4.08248290463863,
+      "min": 10.0,
+      "max": 20.0,
+      "total": null
+    },
+    "qubit_count": {
+      "mean": 4.0,
+      "std": 0.816496580927726,
+      "min": 3.0,
+      "max": 5.0,
+      "total": null
+    },
+    "execution_time": {
+      "mean": 0.5311244328816732,
+      "std": 0.3328031160003216,
+      "min": 0.12801861763000488,
+      "max": 0.9430725574493408,
+      "total": 1.5933732986450195
+    },
+    "queue_time": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "total": null
+    },
+    "success_rate": {
+      "mean": 0.9443359375,
+      "std": 0.0,
+      "min": 0.9443359375,
+      "max": 0.9443359375,
+      "total": null
+    },
+    "shots": {
+      "mean": 1024.0,
+      "std": 0.0,
+      "min": 1024.0,
+      "max": 1024.0,
+      "total": null
+    }
+  },
+  "totals": {
+    "total_circuits": 3,
+    "total_execution_time": 1.5933732986450195,
+    "total_queue_time": 0,
+    "total_gates": 45,
+    "avg_circuit_depth": 6.666666666666667,
+    "avg_execution_time": 0.5311244328816732,
+    "avg_success_rate": 0.9443359375
+  },
+  "timeline": [
+    {
+      "timestamp": 5.367669343948364,
+      "circuit_depth": 6,
+      "gate_count": 15,
+      "qubit_count": 3,
+      "execution_time": 0.5222821235656738,
+      "queue_time": 0,
+      "success_rate": 0.9443359375,
+      "shots": 1024
+    },
+    {
+      "timestamp": 5.367669343948364,
+      "circuit_depth": 6,
+      "gate_count": 10,
+      "qubit_count": 5,
+      "execution_time": 0.12801861763000488,
+      "queue_time": 0,
+      "success_rate": null,
+      "shots": 1024
+    },
+    {
+      "timestamp": 5.367669343948364,
+      "circuit_depth": 8,
+      "gate_count": 20,
+      "qubit_count": 4,
+      "execution_time": 0.9430725574493408,
+      "queue_time": 0,
+      "success_rate": null,
+      "shots": 1024
+    }
+  ]
+}
