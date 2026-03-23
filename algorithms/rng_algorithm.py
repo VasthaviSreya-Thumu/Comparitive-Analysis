@@ -4,9 +4,13 @@ Compares CPU (Pseudo-RNG), GPU (Parallel Pseudo-RNG), and QPU (True Quantum RNG)
 """
 
 import numpy as np
-import torch
 import time
 from typing import Dict, Any, Optional, List
+
+try:
+    import torch
+except ImportError:  # pragma: no cover - runtime-dependent optional dependency
+    torch = None
 
 class RNGAlgorithm:
     """
@@ -55,10 +59,15 @@ class RNGAlgorithm:
             
     def _run_cpu(self, **kwargs) -> Dict[str, Any]:
         """Run on CPU using numpy"""
-        import psutil
-        import os
-        process = psutil.Process(os.getpid())
-        start_mem = process.memory_info().rss / (1024 * 1024)
+        process = None
+        try:
+            import psutil
+            import os
+            process = psutil.Process(os.getpid())
+        except ImportError:
+            process = None
+
+        start_mem = process.memory_info().rss / (1024 * 1024) if process else 0.0
         
         np.random.seed(self.seed)
         
@@ -67,7 +76,7 @@ class RNGAlgorithm:
         numbers = np.random.randint(0, self.max_value + 1, size=self.count)
         end_time = time.perf_counter()
         
-        end_mem = process.memory_info().rss / (1024 * 1024)
+        end_mem = process.memory_info().rss / (1024 * 1024) if process else 0.0
         peak_mem = end_mem # simplify for now
         
         generation_time = end_time - start_time
@@ -86,12 +95,12 @@ class RNGAlgorithm:
         
     def _run_gpu(self, **kwargs) -> Dict[str, Any]:
         """Run on GPU using PyTorch"""
-        if not torch.cuda.is_available():
+        if torch is None or not torch.cuda.is_available():
             # Fallback to CPU if no GPU
             cpu_result = self._run_cpu(**kwargs)
             cpu_result.update({
                 'platform': 'GPU',
-                'note': 'CUDA not available (CPU Fallback)',
+                'note': 'PyTorch/CUDA not available (CPU Fallback)',
                 'algorithm': 'Parallel Pseudo-RNG (CPU Fallback)'
             })
             return cpu_result
@@ -130,10 +139,14 @@ class RNGAlgorithm:
         
     def _run_qpu(self, shots: int = 1024, **kwargs) -> Dict[str, Any]:
         """Run on QPU using quantum_rng module"""
-        import psutil
-        import os
-        process = psutil.Process(os.getpid())
-        start_mem = process.memory_info().rss / (1024 * 1024)
+        process = None
+        try:
+            import psutil
+            import os
+            process = psutil.Process(os.getpid())
+        except ImportError:
+            process = None
+        start_mem = process.memory_info().rss / (1024 * 1024) if process else 0.0
 
         from quantum.quantum_rng import run_quantum_rng
         
@@ -146,7 +159,7 @@ class RNGAlgorithm:
                 shots=shots
             )
             
-            end_mem = process.memory_info().rss / (1024 * 1024)
+            end_mem = process.memory_info().rss / (1024 * 1024) if process else 0.0
             
             return {
                 'platform': 'QPU',

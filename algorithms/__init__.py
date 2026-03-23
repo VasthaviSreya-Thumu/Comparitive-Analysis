@@ -1,5 +1,5 @@
-"""Algorithms package for cross-platform search comparison"""
+"""Algorithms package for Focus RNG cross-platform comparison."""
 
-from .search_algorithm import SearchAlgorithm
+from .rng_algorithm import RNGAlgorithm
 
-__all__ = ['SearchAlgorithm']
+__all__ = ["RNGAlgorithm"]

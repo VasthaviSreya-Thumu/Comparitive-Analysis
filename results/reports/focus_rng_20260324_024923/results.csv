@@ -1,0 +1,13 @@
+run_index,count,planned_qubits,platform,platform_runtime_label,algorithm,success,error,execution_time_s,throughput_numbers_per_s,peak_memory_mb,qpu_qubits,time_per_item_s
+1,100,7,CPU,CPU,Pseudo-RNG (Mersenne Twister),True,,6.146300074760802e-05,1626995.0829547113,0.0,,6.146300074760802e-07
+1,100,7,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),True,,2.6039997464977205e-05,3840246.149581856,0.0,,2.6039997464977204e-07
+1,100,7,QPU,QPU,Unknown,False,No module named 'qiskit',0.0,0.0,,7,
+2,1000,10,CPU,CPU,Pseudo-RNG (Mersenne Twister),True,,3.2722997275413945e-05,30559547.818418782,0.0,,3.2722997275413944e-08
+2,1000,10,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),True,,3.306399958091788e-05,30244374.9296781,0.0,,3.306399958091788e-08
+2,1000,10,QPU,QPU,Unknown,False,No module named 'qiskit',0.0,0.0,,10,
+3,5000,10,CPU,CPU,Pseudo-RNG (Mersenne Twister),True,,4.602399712894112e-05,108638977.74875939,0.0,,9.204799425788223e-09
+3,5000,10,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),True,,3.788899994106032e-05,131964422.59700549,0.0,,7.577799988212063e-09
+3,5000,10,QPU,QPU,Unknown,False,No module named 'qiskit',0.0,0.0,,10,
+4,10000,10,CPU,CPU,Pseudo-RNG (Mersenne Twister),True,,5.718700049328618e-05,174864915.34337443,0.0,,5.718700049328618e-09
+4,10000,10,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),True,,5.4616000852547586e-05,183096525.63171047,0.0,,5.461600085254759e-09
+4,10000,10,QPU,QPU,Unknown,False,No module named 'qiskit',0.0,0.0,,10,

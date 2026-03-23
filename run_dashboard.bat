@@ -1,8 +1,8 @@
 @echo off
-echo Starting Cross-Platform Search Algorithm Dashboard...
+echo Starting Focus RNG Architecture Comparison Dashboard...
 echo.
-echo NOTE: If you have an AMD GPU, this application will run in CPU fallback mode
-echo because standard PyTorch only supports NVIDIA CUDA.
+echo NOTE: If CUDA/PyTorch is unavailable, GPU path will use CPU fallback behavior.
+echo NOTE: If Qiskit is unavailable, QPU path will show dependency errors.
 echo.
 set PYTHONIOENCODING=utf-8
 python -m streamlit run app.py

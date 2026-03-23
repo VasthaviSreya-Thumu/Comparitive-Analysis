@@ -1,30 +1,27 @@
-"""
-Helper functions for data formatting and utilities
-"""
+"""Utility helpers for Focus RNG benchmarking."""
 
-import time
-import torch
 import numpy as np
 import subprocess
 import sys
+import random
+import os
 
-def format_bytes(bytes_value):
-    """Convert bytes to human-readable format"""
-    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
-        if bytes_value < 1024.0:
-            return f"{bytes_value:.2f} {unit}"
-        bytes_value /= 1024.0
-    return f"{bytes_value:.2f} PB"
+try:
+    import torch
+except ImportError:  # pragma: no cover - runtime-dependent optional dependency
+    torch = None
 
 def set_seed(seed=42):
     """Set random seed for reproducibility"""
+    random.seed(seed)
     np.random.seed(seed)
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+    if torch is not None:
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
 
 def _detect_gpu_windows():
     """Detect GPU on Windows using wmic (works for AMD, Intel, NVIDIA)."""
@@ -50,13 +47,17 @@ def _detect_gpu_windows():
 
 def get_device_info():
     """Get detailed device information, including AMD and Intel GPUs."""
+    cpu_count = os.cpu_count() or 1
+    if torch is not None:
+        cpu_count = torch.get_num_threads()
+
     info = {
-        'cpu_count': torch.get_num_threads(),
-        'cuda_available': torch.cuda.is_available(),
+        'cpu_count': cpu_count,
+        'cuda_available': bool(torch and torch.cuda.is_available()),
         'gpu_available': False,
     }
 
-    if torch.cuda.is_available():
+    if torch and torch.cuda.is_available():
         info['gpu_available'] = True
         info['gpu_count'] = torch.cuda.device_count()
         info['gpu_name'] = torch.cuda.get_device_name(0)
@@ -74,13 +75,3 @@ def get_device_info():
                 info['gpu_backend'] = "DirectX/OpenCL (non-CUDA)"
 
     return info
-
-def print_experiment_header(config_dict=None):
-    """Print formatted experiment header"""
-    print("\n" + "=" * 80)
-    print("Search Comparison - Experiment Configuration")
-    print("=" * 80)
-    if config_dict:
-        for key, value in config_dict.items():
-            print(f"{key:30s}: {value}")
-    print("=" * 80 + "\n")

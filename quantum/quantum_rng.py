@@ -66,6 +66,7 @@ class QuantumRNG:
         is_ibm_backend = hasattr(backend, 'service') or 'ibm' in str(type(backend)).lower()
         
         random_numbers = []
+        effective_shots = max(count, shots)
         
         if is_ibm_backend:
             # Use SamplerV2 for IBM Quantum backends
@@ -73,7 +74,7 @@ class QuantumRNG:
             
             # Run once with enough shots to get all numbers
             sampler = Sampler(mode=backend)
-            job = sampler.run([transpiled], shots=count)
+            job = sampler.run([transpiled], shots=effective_shots)
             result = job.result()
             
             # Extract bitstrings from SamplerV2 result
@@ -101,15 +102,23 @@ class QuantumRNG:
                 random_numbers = [0] * count
                 
         else:
-            # Use Aer simulator - can do multiple runs efficiently
-            for _ in range(count):
-                job = backend.run(transpiled, shots=1)
-                result = job.result()
+            # Use a single batched Aer simulator run for significant speedup.
+            job = backend.run(transpiled, shots=effective_shots, memory=True)
+            result = job.result()
+
+            try:
+                bitstrings = result.get_memory()
+                for bitstring in bitstrings[:count]:
+                    random_numbers.append(int(bitstring, 2))
+            except Exception:
+                # Fallback when memory is unavailable: expand counts into a sample list.
                 counts = result.get_counts()
-                
-                # Get the measured bitstring
-                bitstring = list(counts.keys())[0]
-                random_numbers.append(int(bitstring, 2))
+                for bitstring, freq in counts.items():
+                    random_numbers.extend([int(bitstring, 2)] * int(freq))
+
+                if len(random_numbers) < count:
+                    random_numbers.extend([0] * (count - len(random_numbers)))
+                random_numbers = random_numbers[:count]
         
         return random_numbers
     
@@ -141,7 +150,7 @@ def run_quantum_rng(num_qubits=5, count=100, backend=None, shots=1024):
     """
     from qiskit_aer import AerSimulator
     
-    start_time = time.time()
+    start_time = time.perf_counter()
     
     # Create RNG
     rng = QuantumRNG(num_qubits)
@@ -151,13 +160,14 @@ def run_quantum_rng(num_qubits=5, count=100, backend=None, shots=1024):
         backend = AerSimulator()
     
     # Generate random numbers
-    # For IBM backends, we use shots=count to get all numbers in one job
+    # For IBM backends, we use shots=count to get all numbers in one job.
+    # For simulators, we also batch into one job for performance.
     is_ibm_backend = hasattr(backend, 'service') or 'ibm' in str(type(backend)).lower()
-    actual_shots = count if is_ibm_backend else 1
+    actual_shots = count if is_ibm_backend else max(count, shots)
     
     numbers = rng.generate_random_numbers(count, backend, actual_shots)
     
-    execution_time = time.time() - start_time
+    execution_time = time.perf_counter() - start_time
     
     # Calculate statistics
     if numbers:
