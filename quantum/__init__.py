@@ -1,1 +1,1 @@
-"""Quantum circuit implementations for Grover's search, RNG, and game algorithms"""
+"""Quantum circuit implementations for Focus RNG benchmarking."""

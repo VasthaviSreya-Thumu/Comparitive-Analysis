@@ -1,142 +1,108 @@
 """
-Main Application - CPU vs GPU vs QPU Search Algorithm Comparison
+RNG Comparison CLI (CPU vs GPU vs QPU)
+
+This is the minimal command-line runner aligned to the project problem statement.
 """
 
 import argparse
 import sys
-import torch
-from pathlib import Path
-import config
-from core.comparator import ExperimentComparator
-from utils.helpers import get_device_info
+from typing import Dict, Any
 
-def print_banner():
-    """Print application banner"""
+from algorithms.rng_algorithm import RNGAlgorithm
+from utils.helpers import get_device_info, set_seed
+
+
+def print_banner() -> None:
     print("\n" + "=" * 80)
-    print(" " * 20 + "Cross-Platform Search Algorithm Comparison")
-    print(" " * 25 + "CPU vs GPU vs QPU Performance Study")
-    print("=" * 80)
-    print()
+    print(" " * 19 + "Focus RNG Architecture Comparison (CLI)")
+    print(" " * 15 + "CPU vs GPU vs QPU - Time and Resource Efficiency")
+    print("=" * 80 + "\n")
 
-def check_environment():
-    """Check and display environment information"""
+
+def print_environment() -> None:
+    info = get_device_info()
     print("Environment Check:")
     print("-" * 80)
-    
-    device_info = get_device_info()
-    print(f"CPU Threads: {device_info.get('cpu_count', 'Unknown')}")
-    print(f"CUDA Available: {device_info.get('cuda_available', False)}")
-    
-    if device_info.get('cuda_available'):
-        print(f"GPU Count: {device_info.get('gpu_count', 0)}")
-        print(f"GPU Name: {device_info.get('gpu_name', 'Unknown')}")
+    print(f"CPU Threads: {info.get('cpu_count', 'Unknown')}")
+    print(f"CUDA Available: {info.get('cuda_available', False)}")
+    if info.get("gpu_available"):
+        print(f"GPU: {info.get('gpu_name', 'Unknown')}")
     else:
-        print("! Warning: CUDA not available. GPU experiments will use CPU fallback or simulation.")
-    
+        print("! GPU not available. GPU path may run as CPU fallback.")
+    print("-" * 80 + "\n")
+
+
+def run_rng(count: int, qubits: int, shots: int, seed: int) -> Dict[str, Any]:
+    set_seed(seed)
+    runner = RNGAlgorithm(count=count, num_qubits=qubits, seed=seed)
+    return runner.run_comparison(platforms=["CPU", "GPU", "QPU"], shots=shots)
+
+
+def print_summary(results: Dict[str, Any], count: int, qubits: int) -> None:
+    print(f"RNG Run: N={count}, qubits={qubits}")
     print("-" * 80)
-    print()
-
-def run_experiment(algorithm, **kwargs):
-    """Run experiment for specified algorithm"""
-    print(f"\n> Running {algorithm.upper()} Comparison...")
-    
-    results = {}
-    
-    if algorithm == 'search':
-        from algorithms.search_algorithm import SearchAlgorithm
-        
-        size = kwargs.get('size', 1000)
-        target = kwargs.get('target', None)
-        
-        runner = SearchAlgorithm(database_size=size, target_position=target)
-        results = runner.run_comparison()
-        
-        # Visualize
-        output_chart = config.CHARTS_DIR / f'search_comparison_N{size}.png'
-        # create_cpu_gpu_qpu_comparison(results, str(output_chart)) # Needs update for generic results
-        
-    elif algorithm == 'rng':
-        from algorithms.rng_algorithm import RNGAlgorithm
-        
-        count = kwargs.get('count', 1000)
-        runner = RNGAlgorithm(count=count)
-        results = runner.run_comparison()
-        
-    elif algorithm == 'game':
-        from algorithms.game_algorithm import GameAlgorithm
-        
-        games = kwargs.get('games', 10)
-        runner = GameAlgorithm(num_games=games)
-        results = runner.run_comparison()
-        
-    else:
-        print(f"Unknown algorithm: {algorithm}")
-        return
-
-    # Print Summary
-    print("\nResults Summary:")
-    print("-" * 60)
-    platforms = results.get('platforms', {})
-    
-    for platform, data in platforms.items():
-        success = "[OK]" if data.get('success') else "[FAIL]"
-        print(f"{success} {platform}: {data.get('algorithm', 'Unknown')}")
-        
-        if 'search_time' in data:
-            print(f"    Time: {data['search_time']:.6f}s")
-        elif 'generation_time' in data:
-            print(f"    Time: {data['generation_time']:.6f}s ({data.get('numbers_per_second', 0):.0f} nums/s)")
-        elif 'time_seconds' in data:
-            print(f"    Time: {data['time_seconds']:.6f}s ({data.get('games_per_second', 0):.2f} games/s)")
-            
-        if 'error' in data:
-            print(f"    Error: {data['error']}")
-            
-    print("-" * 60)
+    for platform, data in results.get("platforms", {}).items():
+        if data.get("success"):
+            t = float(data.get("generation_time", 0.0) or 0.0)
+            r = float(data.get("numbers_per_second", 0.0) or 0.0)
+            mem = data.get("peak_memory_mb")
+            label = data.get("algorithm", "Unknown")
+            print(f"[OK] {platform:>3} | {label}")
+            print(f"     time={t:.6f}s | throughput={r:,.2f}/s")
+            if platform == "QPU":
+                print(f"     qubits={data.get('num_qubits', qubits)}")
+            else:
+                print(f"     peak_memory_mb={mem if mem is not None else 'N/A'}")
+        else:
+            print(f"[FAIL] {platform:>3} | {data.get('error', 'Unknown error')}")
+    print("-" * 80)
 
 
-def main():
-    """Main entry point"""
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description='CPU vs GPU vs QPU Search Comparison',
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        description="CPU vs GPU vs QPU RNG comparison (problem-statement aligned)."
     )
-    
-    parser.add_argument('--algorithm', type=str, choices=['search', 'rng', 'game'], default='search',
-                      help='Algorithm to compare (default: search)')
-    
-    # Search args
-    parser.add_argument('--size', type=int, default=1000, help='Database size (Search) or Count (RNG)')
-    parser.add_argument('--target', type=int, help='Target position (Search)')
-    
-    # Game args
-    parser.add_argument('--games', type=int, default=10, help='Number of games (Game)')
-    
-    # Generic flags
-    parser.add_argument('--test', action='store_true', help='Run simple test')
-    
+    parser.add_argument("--count", type=int, default=1000, help="Number of random values to generate.")
+    parser.add_argument("--qubits", type=int, default=8, help="Qubits for QPU RNG range.")
+    parser.add_argument("--shots", type=int, default=1024, help="Quantum measurement shots.")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed.")
+    return parser
+
+
+def main() -> int:
+    parser = build_parser()
     args = parser.parse_args()
-    
+
+    if args.count <= 0:
+        print("Count must be > 0")
+        return 2
+    if args.qubits < 2:
+        print("Qubits must be >= 2")
+        return 2
+
     print_banner()
-    check_environment()
-    
+    print_environment()
+
     try:
-        run_experiment(
-            args.algorithm,
-            size=args.size, # doubling as count for RNG
-            count=args.size,
-            target=args.target,
-            games=args.games
+        results = run_rng(
+            count=args.count,
+            qubits=args.qubits,
+            shots=args.shots,
+            seed=args.seed,
         )
-            
+        print_summary(results, count=args.count, qubits=args.qubits)
+        return 0
     except KeyboardInterrupt:
-        print("\n! Interrupted by user")
-        sys.exit(0)
-    except Exception as e:
-        print(f"\nX Error: {str(e)}")
+        print("\nInterrupted by user.")
+        return 130
+    except Exception as exc:
+        print(f"\nError: {exc}")
         import traceback
+
         traceback.print_exc()
-        sys.exit(1)
+        return 1
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
+

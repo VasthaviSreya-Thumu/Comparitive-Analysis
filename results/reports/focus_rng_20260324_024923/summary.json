@@ -1,0 +1,61 @@
+{
+  "platforms": {
+    "CPU": {
+      "runs_total": 4,
+      "runs_success": 4,
+      "runs_failed": 0,
+      "mean_time_s": 4.9349248911312316e-05,
+      "median_time_s": 5.160549881111365e-05,
+      "mean_throughput_numbers_per_s": 78922608.99837683,
+      "best_throughput_numbers_per_s": 174864915.34337443,
+      "mean_peak_memory_mb": 0.0,
+      "empirical_time_exponent": -0.018536403013942864,
+      "notes": [
+        "CPU"
+      ]
+    },
+    "GPU": {
+      "runs_total": 4,
+      "runs_success": 4,
+      "runs_failed": 0,
+      "mean_time_s": 3.790224945987575e-05,
+      "median_time_s": 3.54764997609891e-05,
+      "mean_throughput_numbers_per_s": 87286392.32699397,
+      "best_throughput_numbers_per_s": 183096525.63171047,
+      "mean_peak_memory_mb": 0.0,
+      "empirical_time_exponent": 0.14060345949086908,
+      "notes": [
+        "GPU"
+      ]
+    },
+    "QPU": {
+      "runs_total": 4,
+      "runs_success": 0,
+      "runs_failed": 4,
+      "mean_time_s": null,
+      "median_time_s": null,
+      "mean_throughput_numbers_per_s": null,
+      "best_throughput_numbers_per_s": null,
+      "mean_peak_memory_mb": null,
+      "empirical_time_exponent": null,
+      "notes": [
+        "QPU"
+      ]
+    }
+  },
+  "speedups_vs_cpu": {
+    "100": {
+      "GPU": 2.3603305196274844
+    },
+    "1000": {
+      "GPU": 0.9896865984204544
+    },
+    "5000": {
+      "GPU": 1.2147060413453905
+    },
+    "10000": {
+      "GPU": 1.0470741101619612
+    }
+  },
+  "qpu_qubit_scaling": {}
+}

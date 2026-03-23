@@ -1,0 +1,347 @@
+{
+  "generated_at": "2026-03-24T02:49:23",
+  "config": {
+    "counts": [
+      100,
+      1000,
+      5000,
+      10000
+    ],
+    "qubit_mode": "logn",
+    "fixed_qubits": 5,
+    "min_qubits": 2,
+    "max_qubits": 10,
+    "shots": 1024,
+    "seed": 42
+  },
+  "runs": [
+    {
+      "count": 100,
+      "num_qubits": 7,
+      "result": {
+        "info": {
+          "count": 100,
+          "range": "[0, 127]",
+          "num_qubits": 7
+        },
+        "platforms": {
+          "CPU": {
+            "platform": "CPU",
+            "algorithm": "Pseudo-RNG (Mersenne Twister)",
+            "count": 100,
+            "numbers": [
+              102,
+              51,
+              92,
+              14,
+              106,
+              71,
+              60,
+              20,
+              102,
+              121,
+              82,
+              86,
+              74,
+              74,
+              87,
+              116,
+              99,
+              103,
+              23,
+              2
+            ],
+            "generation_time": 6.146300074760802e-05,
+            "numbers_per_second": 1626995.0829547113,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true
+          },
+          "GPU": {
+            "platform": "GPU",
+            "algorithm": "Parallel Pseudo-RNG (CPU Fallback)",
+            "count": 100,
+            "numbers": [
+              102,
+              51,
+              92,
+              14,
+              106,
+              71,
+              60,
+              20,
+              102,
+              121,
+              82,
+              86,
+              74,
+              74,
+              87,
+              116,
+              99,
+              103,
+              23,
+              2
+            ],
+            "generation_time": 2.6039997464977205e-05,
+            "numbers_per_second": 3840246.149581856,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true,
+            "note": "PyTorch/CUDA not available (CPU Fallback)"
+          },
+          "QPU": {
+            "error": "No module named 'qiskit'",
+            "success": false
+          }
+        }
+      }
+    },
+    {
+      "count": 1000,
+      "num_qubits": 10,
+      "result": {
+        "info": {
+          "count": 1000,
+          "range": "[0, 1023]",
+          "num_qubits": 10
+        },
+        "platforms": {
+          "CPU": {
+            "platform": "CPU",
+            "algorithm": "Pseudo-RNG (Mersenne Twister)",
+            "count": 1000,
+            "numbers": [
+              102,
+              435,
+              860,
+              270,
+              106,
+              71,
+              700,
+              20,
+              614,
+              121,
+              466,
+              214,
+              330,
+              458,
+              87,
+              372,
+              99,
+              871,
+              663,
+              130
+            ],
+            "generation_time": 3.2722997275413945e-05,
+            "numbers_per_second": 30559547.818418782,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true
+          },
+          "GPU": {
+            "platform": "GPU",
+            "algorithm": "Parallel Pseudo-RNG (CPU Fallback)",
+            "count": 1000,
+            "numbers": [
+              102,
+              435,
+              860,
+              270,
+              106,
+              71,
+              700,
+              20,
+              614,
+              121,
+              466,
+              214,
+              330,
+              458,
+              87,
+              372,
+              99,
+              871,
+              663,
+              130
+            ],
+            "generation_time": 3.306399958091788e-05,
+            "numbers_per_second": 30244374.9296781,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true,
+            "note": "PyTorch/CUDA not available (CPU Fallback)"
+          },
+          "QPU": {
+            "error": "No module named 'qiskit'",
+            "success": false
+          }
+        }
+      }
+    },
+    {
+      "count": 5000,
+      "num_qubits": 10,
+      "result": {
+        "info": {
+          "count": 5000,
+          "range": "[0, 1023]",
+          "num_qubits": 10
+        },
+        "platforms": {
+          "CPU": {
+            "platform": "CPU",
+            "algorithm": "Pseudo-RNG (Mersenne Twister)",
+            "count": 5000,
+            "numbers": [
+              102,
+              435,
+              860,
+              270,
+              106,
+              71,
+              700,
+              20,
+              614,
+              121,
+              466,
+              214,
+              330,
+              458,
+              87,
+              372,
+              99,
+              871,
+              663,
+              130
+            ],
+            "generation_time": 4.602399712894112e-05,
+            "numbers_per_second": 108638977.74875939,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true
+          },
+          "GPU": {
+            "platform": "GPU",
+            "algorithm": "Parallel Pseudo-RNG (CPU Fallback)",
+            "count": 5000,
+            "numbers": [
+              102,
+              435,
+              860,
+              270,
+              106,
+              71,
+              700,
+              20,
+              614,
+              121,
+              466,
+              214,
+              330,
+              458,
+              87,
+              372,
+              99,
+              871,
+              663,
+              130
+            ],
+            "generation_time": 3.788899994106032e-05,
+            "numbers_per_second": 131964422.59700549,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true,
+            "note": "PyTorch/CUDA not available (CPU Fallback)"
+          },
+          "QPU": {
+            "error": "No module named 'qiskit'",
+            "success": false
+          }
+        }
+      }
+    },
+    {
+      "count": 10000,
+      "num_qubits": 10,
+      "result": {
+        "info": {
+          "count": 10000,
+          "range": "[0, 1023]",
+          "num_qubits": 10
+        },
+        "platforms": {
+          "CPU": {
+            "platform": "CPU",
+            "algorithm": "Pseudo-RNG (Mersenne Twister)",
+            "count": 10000,
+            "numbers": [
+              102,
+              435,
+              860,
+              270,
+              106,
+              71,
+              700,
+              20,
+              614,
+              121,
+              466,
+              214,
+              330,
+              458,
+              87,
+              372,
+              99,
+              871,
+              663,
+              130
+            ],
+            "generation_time": 5.718700049328618e-05,
+            "numbers_per_second": 174864915.34337443,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true
+          },
+          "GPU": {
+            "platform": "GPU",
+            "algorithm": "Parallel Pseudo-RNG (CPU Fallback)",
+            "count": 10000,
+            "numbers": [
+              102,
+              435,
+              860,
+              270,
+              106,
+              71,
+              700,
+              20,
+              614,
+              121,
+              466,
+              214,
+              330,
+              458,
+              87,
+              372,
+              99,
+              871,
+              663,
+              130
+            ],
+            "generation_time": 5.4616000852547586e-05,
+            "numbers_per_second": 183096525.63171047,
+            "peak_memory_mb": 0.0,
+            "memory_used_mb": 0,
+            "success": true,
+            "note": "PyTorch/CUDA not available (CPU Fallback)"
+          },
+          "QPU": {
+            "error": "No module named 'qiskit'",
+            "success": false
+          }
+        }
+      }
+    }
+  ]
+}
