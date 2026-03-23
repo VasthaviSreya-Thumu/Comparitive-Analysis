@@ -16,6 +16,9 @@ build/
 *.swp
 *.swo
 *~
+.env
+.env.*
+!.env.example
 
 # Data and results
 data/cifar-10-batches-py/
