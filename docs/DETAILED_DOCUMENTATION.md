@@ -85,10 +85,12 @@ Metrics used:
 ## 3.2 Batch benchmark (`focus_rng_benchmark.py`) flow
 
 1. Parse CLI arguments.
-2. Sweep each workload size.
-3. Run CPU/GPU/QPU via `RNGAlgorithm`.
-4. Build summary aggregates and speedup table.
-5. Save:
+2. For each workload size, run configurable warmups (`--warmup`).
+3. Run configurable measured repeats (`--repeats`) for CPU/GPU/QPU.
+4. Flatten results with trial index, backend type, and fallback flags.
+5. Build summary aggregates with mean/std/95% CI and speedup table.
+6. Exclude fallback runs (for example GPU CPU-fallback) from primary analysis by default.
+7. Save:
    - `raw_runs.json`
    - `results.csv`
    - `summary.json`
@@ -153,6 +155,8 @@ Common fields:
 
 - `platform`
 - `algorithm`
+- `backend_type`
+- `is_fallback`
 - `success`
 - `generation_time`
 - `numbers_per_second`
@@ -162,6 +166,7 @@ Common fields:
 QPU-specific additional field:
 
 - `num_qubits`
+- `backend_name`
 
 ## 4.2 `quantum/quantum_rng.py`
 
@@ -309,4 +314,3 @@ Minimal CLI run:
 ```bash
 python main.py --count 1000 --qubits 8 --shots 1024 --seed 42
 ```
-
