@@ -90,6 +90,8 @@ class RNGAlgorithm:
             'numbers_per_second': self.count / generation_time if generation_time > 0 else 0,
             'peak_memory_mb': peak_mem,
             'memory_used_mb': max(0, end_mem - start_mem),
+            'backend_type': 'cpu',
+            'is_fallback': False,
             'success': True
         }
         
@@ -101,7 +103,9 @@ class RNGAlgorithm:
             cpu_result.update({
                 'platform': 'GPU',
                 'note': 'PyTorch/CUDA not available (CPU Fallback)',
-                'algorithm': 'Parallel Pseudo-RNG (CPU Fallback)'
+                'algorithm': 'Parallel Pseudo-RNG (CPU Fallback)',
+                'backend_type': 'cpu-fallback',
+                'is_fallback': True,
             })
             return cpu_result
             
@@ -134,6 +138,8 @@ class RNGAlgorithm:
             'numbers_per_second': self.count / generation_time if generation_time > 0 else 0,
             'peak_memory_mb': peak_mem,
             'memory_used_mb': max(0, end_mem - start_mem),
+            'backend_type': 'cuda',
+            'is_fallback': False,
             'success': True
         }
         
@@ -172,6 +178,9 @@ class RNGAlgorithm:
                 'num_qubits': self.num_qubits, # Explicitly added for UI
                 'peak_memory_mb': end_mem, 
                 'memory_used_mb': max(0, end_mem - start_mem),
+                'backend_type': result.get('backend_type', 'unknown'),
+                'backend_name': result.get('backend_name', 'unknown'),
+                'is_fallback': False,
                 'success': True
             }
         except Exception as e:

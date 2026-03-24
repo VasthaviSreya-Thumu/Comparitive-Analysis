@@ -1,0 +1,13 @@
+run_index,trial_index,count,planned_qubits,platform,platform_runtime_label,algorithm,backend_type,backend_name,is_fallback,included_in_analysis,success,error,execution_time_s,throughput_numbers_per_s,peak_memory_mb,qpu_qubits,time_per_item_s
+1,1,64,6,CPU,CPU,Pseudo-RNG (Mersenne Twister),cpu,,False,True,True,,4.0753000575932674e-05,1570436.5100859888,303.90234375,,6.36765633998948e-07
+1,1,64,6,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),cpu-fallback,,True,False,True,,2.4534001568099484e-05,2608624.598900184,303.90234375,,3.8334377450155444e-07
+1,1,64,6,QPU,QPU,True Quantum RNG,simulator,aer_simulator,False,True,True,,0.13150532100007695,486.67232255919555,304.00390625,6,0.0020547706406262023
+1,2,64,6,CPU,CPU,Pseudo-RNG (Mersenne Twister),cpu,,False,True,True,,3.524800013110507e-05,1815705.8488978595,304.00390625,,5.507500020485168e-07
+1,2,64,6,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),cpu-fallback,,True,False,True,,2.3491000320063904e-05,2724447.62368578,304.00390625,,3.670468800009985e-07
+1,2,64,6,QPU,QPU,True Quantum RNG,simulator,aer_simulator,False,True,True,,0.13124879200040596,487.6235356116805,304.046875,6,0.002050762375006343
+2,1,128,7,CPU,CPU,Pseudo-RNG (Mersenne Twister),cpu,,False,True,True,,3.4852999306167476e-05,3672567.7143473136,304.109375,,2.722890570794334e-07
+2,1,128,7,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),cpu-fallback,,True,False,True,,2.2713000362273306e-05,5635539.028679376,304.109375,,1.774453153302602e-07
+2,1,128,7,QPU,QPU,True Quantum RNG,simulator,aer_simulator,False,True,True,,0.12548413399963465,1020.049275714591,304.15234375,7,0.0009803447968721457
+2,2,128,7,CPU,CPU,Pseudo-RNG (Mersenne Twister),cpu,,False,True,True,,3.694800034281798e-05,3464328.212957833,304.15234375,,2.8865625267826545e-07
+2,2,128,7,GPU,GPU,Parallel Pseudo-RNG (CPU Fallback),cpu-fallback,,True,False,True,,2.417900032014586e-05,5293849.9650604185,304.15234375,,1.8889844000113953e-07
+2,2,128,7,QPU,QPU,True Quantum RNG,simulator,aer_simulator,False,True,True,,0.12660656200023368,1011.0060487999331,304.2109375,7,0.0009891137656268256

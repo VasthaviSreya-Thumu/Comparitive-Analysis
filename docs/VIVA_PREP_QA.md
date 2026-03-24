@@ -108,6 +108,7 @@ It provides better compatibility for PyTorch/Qiskit/Streamlit dependencies.
 - peak memory MB (CPU/GPU)
 - qubit count (QPU)
 - speedup vs CPU
+- standard deviation and 95% confidence intervals across repeated trials
 
 ### Q21. Where are results saved?
 
@@ -132,11 +133,14 @@ Dashboard is ideal for interactive exploration; batch script is ideal for reprod
 
 Seed control is centralized through `set_seed(...)` for Python, NumPy, and torch (if available).
 
-### Q25. What is the main limitation of your QPU comparison?
+### Q25. Why use warmup and repeats?
+
+Warmup runs reduce startup/transient effects, and repeated measured runs allow reporting statistically meaningful values (mean/std/95% CI) instead of single-shot timings.
+
+### Q26. What is the main limitation of your QPU comparison?
 
 Most runs are simulator-based, so they are not identical to real hardware behavior.
 
 ## 8) 30-Second Summary Answer
 
 “This repository benchmarks one focused algorithmic task, RNG, across CPU, GPU, and QPU. It measures time, throughput, and architecture-appropriate resource usage, then analyzes scaling and speedup. The Streamlit dashboard is the primary interface, and a batch benchmark script generates reproducible reports for formal evaluation.”
-

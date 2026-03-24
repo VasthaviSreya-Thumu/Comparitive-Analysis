@@ -6,6 +6,49 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 import numpy as np
 import time
 
+
+def _backend_name(backend):
+    """Best-effort backend name extraction."""
+    if backend is None:
+        return "aer_simulator"
+    try:
+        if hasattr(backend, "name"):
+            name = backend.name() if callable(backend.name) else backend.name
+            if name:
+                return str(name)
+    except Exception:
+        pass
+    try:
+        if hasattr(backend, "backend_name"):
+            name = backend.backend_name() if callable(backend.backend_name) else backend.backend_name
+            if name:
+                return str(name)
+    except Exception:
+        pass
+    return str(type(backend))
+
+
+def _backend_type(backend):
+    """Classify backend as simulator or hardware for reporting."""
+    if backend is None:
+        return "simulator"
+
+    name = _backend_name(backend).lower()
+    if "sim" in name or "aer" in name or "fake" in name:
+        return "simulator"
+
+    try:
+        config = backend.configuration()
+        if getattr(config, "simulator", False):
+            return "simulator"
+    except Exception:
+        pass
+
+    if hasattr(backend, "service") or "ibm" in str(type(backend)).lower():
+        return "hardware"
+    return "unknown"
+
+
 class QuantumRNG:
     """
     Quantum Random Number Generator using superposition
@@ -158,6 +201,8 @@ def run_quantum_rng(num_qubits=5, count=100, backend=None, shots=1024):
     # Use simulator if no backend provided
     if backend is None:
         backend = AerSimulator()
+    backend_name = _backend_name(backend)
+    backend_type = _backend_type(backend)
     
     # Generate random numbers
     # For IBM backends, we use shots=count to get all numbers in one job.
@@ -198,7 +243,9 @@ def run_quantum_rng(num_qubits=5, count=100, backend=None, shots=1024):
         },
         'execution_time': execution_time,
         'circuit_info': rng.get_circuit_info(),
-        'shots': actual_shots
+        'shots': actual_shots,
+        'backend_name': backend_name,
+        'backend_type': backend_type,
     }
 
 

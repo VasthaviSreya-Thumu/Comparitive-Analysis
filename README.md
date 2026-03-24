@@ -101,8 +101,17 @@ python focus_rng_benchmark.py \
   --counts 100,1000,5000,10000 \
   --qubit-mode logn \
   --max-qubits 10 \
-  --shots 1024
+  --shots 1024 \
+  --warmup 2 \
+  --repeats 10
 ```
+
+Methodology notes:
+
+- `--warmup` runs are executed before measured trials to stabilize timing.
+- `--repeats` controls measured trials used for mean/std/95% CI.
+- GPU CPU-fallback runs are excluded from primary analysis by default.
+- Use `--include-fallback` only when you intentionally want fallback runs in summary/speedup metrics.
 
 Output folder:
 

@@ -66,6 +66,7 @@ def resolve_qubits(
 
 def extract_row(
     run_idx: int,
+    trial_idx: int,
     count: int,
     planned_qubits: int,
     platform: str,
@@ -84,14 +85,21 @@ def extract_row(
     if platform == "QPU":
         qpu_qubits = data.get("num_qubits", planned_qubits)
         qpu_qubits = int(qpu_qubits) if qpu_qubits is not None else planned_qubits
+    backend_type = str(data.get("backend_type", "unknown"))
+    backend_name = str(data.get("backend_name", "")) if data.get("backend_name") is not None else ""
+    is_fallback = bool(data.get("is_fallback", False))
 
     return {
         "run_index": run_idx,
+        "trial_index": trial_idx,
         "count": count,
         "planned_qubits": planned_qubits,
         "platform": platform,
         "platform_runtime_label": data.get("platform", platform),
         "algorithm": data.get("algorithm", "Unknown"),
+        "backend_type": backend_type,
+        "backend_name": backend_name,
+        "is_fallback": is_fallback,
         "success": success,
         "error": data.get("error", ""),
         "execution_time_s": time_s,
@@ -110,12 +118,48 @@ def successful_rows(rows: List[Dict[str, Any]], platform: str) -> List[Dict[str,
     return [r for r in platform_rows(rows, platform) if r["success"] and r["execution_time_s"] > 0]
 
 
-def median_or_none(values: List[float]) -> Optional[float]:
-    return statistics.median(values) if values else None
-
-
 def mean_or_none(values: List[float]) -> Optional[float]:
     return statistics.mean(values) if values else None
+
+
+def stats_with_ci(values: List[float]) -> Dict[str, Optional[float]]:
+    n = len(values)
+    if n == 0:
+        return {
+            "n": 0,
+            "mean": None,
+            "median": None,
+            "std": None,
+            "ci95_low": None,
+            "ci95_high": None,
+        }
+
+    mean = statistics.mean(values)
+    median = statistics.median(values)
+    if n < 2:
+        std = 0.0
+        ci95_low = mean
+        ci95_high = mean
+    else:
+        std = statistics.stdev(values)
+        margin = 1.96 * (std / math.sqrt(n))
+        ci95_low = mean - margin
+        ci95_high = mean + margin
+
+    return {
+        "n": n,
+        "mean": mean,
+        "median": median,
+        "std": std,
+        "ci95_low": ci95_low,
+        "ci95_high": ci95_high,
+    }
+
+
+def analysis_rows(rows: List[Dict[str, Any]], include_fallback: bool) -> List[Dict[str, Any]]:
+    if include_fallback:
+        return rows
+    return [r for r in rows if not r.get("is_fallback", False)]
 
 
 def scaling_exponent(success_rows: List[Dict[str, Any]]) -> Optional[float]:
@@ -123,78 +167,103 @@ def scaling_exponent(success_rows: List[Dict[str, Any]]) -> Optional[float]:
     if len(points) < 2:
         return None
 
-    # Use one point per count for stability.
-    by_count: Dict[int, float] = {}
+    # Aggregate repeats into one mean timing per count.
+    by_count: Dict[int, List[float]] = {}
     for count, timing in points:
-        by_count[count] = timing
-    if len(by_count) < 2:
+        by_count.setdefault(int(count), []).append(float(timing))
+
+    if len(by_count.keys()) < 2:
         return None
 
-    x = np.log(np.array(list(by_count.keys()), dtype=float))
-    y = np.log(np.array(list(by_count.values()), dtype=float))
+    ordered_counts = sorted(by_count.keys())
+    x = np.log(np.array(ordered_counts, dtype=float))
+    y = np.log(np.array([statistics.mean(by_count[c]) for c in ordered_counts], dtype=float))
     slope, _intercept = np.polyfit(x, y, 1)
     return float(slope)
 
 
-def build_summary(rows: List[Dict[str, Any]], counts: List[int]) -> Dict[str, Any]:
+def build_summary(rows: List[Dict[str, Any]], counts: List[int], include_fallback: bool) -> Dict[str, Any]:
+    analyzed_rows = analysis_rows(rows, include_fallback)
     summary: Dict[str, Any] = {
+        "analysis": {
+            "include_fallback": include_fallback,
+            "rows_total": len(rows),
+            "rows_analyzed": len(analyzed_rows),
+            "rows_excluded_as_fallback": len(rows) - len(analyzed_rows),
+        },
         "platforms": {},
         "speedups_vs_cpu": {},
         "qpu_qubit_scaling": {},
     }
 
     for platform in PLATFORMS:
-        success = successful_rows(rows, platform)
         all_rows = platform_rows(rows, platform)
-        times = [r["execution_time_s"] for r in success]
-        throughputs = [r["throughput_numbers_per_s"] for r in success]
+        analyzed_platform_rows = platform_rows(analyzed_rows, platform)
+        success = successful_rows(analyzed_rows, platform)
+        failures = [r for r in analyzed_platform_rows if not r["success"]]
+        fallback_total = sum(1 for r in all_rows if r.get("is_fallback", False))
+        fallback_excluded = sum(
+            1 for r in all_rows if r.get("is_fallback", False) and not include_fallback
+        )
+
+        times = [float(r["execution_time_s"]) for r in success]
+        throughputs = [float(r["throughput_numbers_per_s"]) for r in success]
         memories = [r["peak_memory_mb"] for r in success if r["peak_memory_mb"] is not None]
-        failures = [r for r in all_rows if not r["success"]]
+        time_stats = stats_with_ci(times)
+        throughput_stats = stats_with_ci(throughputs)
 
         summary["platforms"][platform] = {
             "runs_total": len(all_rows),
+            "runs_analyzed": len(analyzed_platform_rows),
             "runs_success": len(success),
             "runs_failed": len(failures),
-            "mean_time_s": mean_or_none(times),
-            "median_time_s": median_or_none(times),
-            "mean_throughput_numbers_per_s": mean_or_none(throughputs),
+            "fallback_runs_total": fallback_total,
+            "fallback_runs_excluded": fallback_excluded,
+            "mean_time_s": time_stats["mean"],
+            "median_time_s": time_stats["median"],
+            "std_time_s": time_stats["std"],
+            "ci95_time_s_low": time_stats["ci95_low"],
+            "ci95_time_s_high": time_stats["ci95_high"],
+            "mean_throughput_numbers_per_s": throughput_stats["mean"],
+            "median_throughput_numbers_per_s": throughput_stats["median"],
+            "std_throughput_numbers_per_s": throughput_stats["std"],
+            "ci95_throughput_numbers_per_s_low": throughput_stats["ci95_low"],
+            "ci95_throughput_numbers_per_s_high": throughput_stats["ci95_high"],
             "best_throughput_numbers_per_s": max(throughputs) if throughputs else None,
             "mean_peak_memory_mb": mean_or_none(memories),
             "empirical_time_exponent": scaling_exponent(success),
-            "notes": sorted({r["platform_runtime_label"] for r in all_rows}),
+            "backend_types": sorted({str(r.get("backend_type", "unknown")) for r in analyzed_platform_rows}),
+            "notes": sorted({r["platform_runtime_label"] for r in analyzed_platform_rows}),
         }
 
-    # Per-count speedups relative to CPU.
+    # Per-count speedups relative to CPU using mean timing across repeats.
     for count in counts:
         summary["speedups_vs_cpu"][str(count)] = {}
-        cpu = next(
-            (
-                r
-                for r in rows
-                if r["count"] == count and r["platform"] == "CPU" and r["success"] and r["execution_time_s"] > 0
-            ),
-            None,
-        )
-        if cpu is None:
+        cpu_rows = [
+            r
+            for r in analyzed_rows
+            if r["count"] == count and r["platform"] == "CPU" and r["success"] and r["execution_time_s"] > 0
+        ]
+        if not cpu_rows:
             continue
+        cpu_mean = statistics.mean([float(r["execution_time_s"]) for r in cpu_rows])
 
         for platform in ["GPU", "QPU"]:
-            other = next(
-                (
-                    r
-                    for r in rows
-                    if r["count"] == count
-                    and r["platform"] == platform
-                    and r["success"]
-                    and r["execution_time_s"] > 0
-                ),
-                None,
-            )
-            if other is None:
+            other_rows = [
+                r
+                for r in analyzed_rows
+                if r["count"] == count
+                and r["platform"] == platform
+                and r["success"]
+                and r["execution_time_s"] > 0
+            ]
+            if not other_rows:
                 continue
-            summary["speedups_vs_cpu"][str(count)][platform] = cpu["execution_time_s"] / other["execution_time_s"]
+            other_mean = statistics.mean([float(r["execution_time_s"]) for r in other_rows])
+            if other_mean > 0:
+                summary["speedups_vs_cpu"][str(count)][platform] = cpu_mean / other_mean
 
-    qpu_success = successful_rows(rows, "QPU")
+    qpu_success = successful_rows(analyzed_rows, "QPU")
     if qpu_success:
         q_values = [r["qpu_qubits"] for r in qpu_success if r["qpu_qubits"] is not None]
         log2_counts = [math.log2(r["count"]) for r in qpu_success]
@@ -212,11 +281,16 @@ def build_summary(rows: List[Dict[str, Any]], counts: List[int]) -> Dict[str, An
 def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
     fieldnames = [
         "run_index",
+        "trial_index",
         "count",
         "planned_qubits",
         "platform",
         "platform_runtime_label",
         "algorithm",
+        "backend_type",
+        "backend_name",
+        "is_fallback",
+        "included_in_analysis",
         "success",
         "error",
         "execution_time_s",
@@ -308,6 +382,9 @@ def write_markdown_report(
     counts: List[int],
     qubit_mode: str,
     shots: int,
+    repeats: int,
+    warmup: int,
+    include_fallback: bool,
     rows: List[Dict[str, Any]],
     summary: Dict[str, Any],
 ) -> None:
@@ -318,6 +395,9 @@ def write_markdown_report(
     lines.append(f"- Counts: {counts}")
     lines.append(f"- Qubit mode: `{qubit_mode}`")
     lines.append(f"- Shots: {shots}")
+    lines.append(f"- Measured repeats per workload: {repeats}")
+    lines.append(f"- Warmup runs per workload: {warmup}")
+    lines.append(f"- Include fallback runs in analysis: {include_fallback}")
     lines.append("")
     lines.append("## Problem Framing")
     lines.append(
@@ -327,18 +407,24 @@ def write_markdown_report(
     lines.append("")
     lines.append("## Platform Summary")
     lines.append("")
-    lines.append("| Platform | Success/Total | Mean Time (s) | Mean Throughput (/s) | Mean Peak Memory (MB) | Empirical Time Exponent |")
-    lines.append("| --- | --- | --- | --- | --- | --- |")
+    lines.append("| Platform | Success/Analyzed/Total | Mean Time (s) | Std Time (s) | 95% CI Time (s) | Mean Throughput (/s) | Fallback Excluded | Empirical Time Exponent |")
+    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
     for platform in PLATFORMS:
         item = summary["platforms"].get(platform, {})
+        ci_time = "N/A"
+        if item.get("ci95_time_s_low") is not None and item.get("ci95_time_s_high") is not None:
+            ci_time = f"[{_fmt(item.get('ci95_time_s_low'))}, {_fmt(item.get('ci95_time_s_high'))}]"
         lines.append(
-            f"| {platform} | {item.get('runs_success', 0)}/{item.get('runs_total', 0)} | "
-            f"{_fmt(item.get('mean_time_s'))} | {_fmt(item.get('mean_throughput_numbers_per_s'))} | "
-            f"{_fmt(item.get('mean_peak_memory_mb'))} | {_fmt(item.get('empirical_time_exponent'))} |"
+            f"| {platform} | {item.get('runs_success', 0)}/{item.get('runs_analyzed', 0)}/{item.get('runs_total', 0)} | "
+            f"{_fmt(item.get('mean_time_s'))} | {_fmt(item.get('std_time_s'))} | {ci_time} | "
+            f"{_fmt(item.get('mean_throughput_numbers_per_s'))} | {item.get('fallback_runs_excluded', 0)} | "
+            f"{_fmt(item.get('empirical_time_exponent'))} |"
         )
     lines.append("")
 
     lines.append("## Speedup vs CPU")
+    lines.append("")
+    lines.append("Speedups are computed from mean execution time across analyzed repeats per workload.")
     lines.append("")
     lines.append("| Count (N) | GPU Speedup | QPU Speedup |")
     lines.append("| --- | --- | --- |")
@@ -360,15 +446,26 @@ def write_markdown_report(
         lines.append("- No successful QPU runs to analyze.")
     lines.append("")
 
+    analysis_meta = summary.get("analysis", {})
+    lines.append("## Analysis Filtering")
+    lines.append("")
+    lines.append(
+        f"- Rows analyzed: {analysis_meta.get('rows_analyzed', 0)} / {analysis_meta.get('rows_total', 0)}"
+    )
+    lines.append(
+        f"- Rows excluded as fallback: {analysis_meta.get('rows_excluded_as_fallback', 0)}"
+    )
+    lines.append("")
+
     failed = [r for r in rows if not r["success"]]
     if failed:
         lines.append("## Failures")
         lines.append("")
-        lines.append("| Count | Platform | Error |")
-        lines.append("| --- | --- | --- |")
+        lines.append("| Count | Trial | Platform | Error |")
+        lines.append("| --- | --- | --- | --- |")
         for row in failed:
             error = str(row.get("error", "")).replace("|", "/")
-            lines.append(f"| {row['count']} | {row['platform']} | {error} |")
+            lines.append(f"| {row['count']} | {row.get('trial_index', 'N/A')} | {row['platform']} | {error} |")
         lines.append("")
 
     lines.append("## Artifacts")
@@ -394,6 +491,11 @@ def _fmt(value: Optional[float]) -> str:
 
 def run(args: argparse.Namespace) -> int:
     counts = parse_counts(args.counts)
+    if args.repeats < 1:
+        raise ValueError("--repeats must be >= 1")
+    if args.warmup < 0:
+        raise ValueError("--warmup must be >= 0")
+
     out_dir = Path(args.output_dir) if args.output_dir else (
         Path("results") / "reports" / f"focus_rng_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     )
@@ -404,6 +506,9 @@ def run(args: argparse.Namespace) -> int:
     print("=" * 80)
     print(f"Counts: {counts}")
     print(f"Qubit mode: {args.qubit_mode}")
+    print(f"Repeats: {args.repeats}")
+    print(f"Warmup runs: {args.warmup}")
+    print(f"Include fallback in analysis: {args.include_fallback}")
     print(f"Output: {out_dir}")
     print("=" * 80)
 
@@ -422,35 +527,56 @@ def run(args: argparse.Namespace) -> int:
         )
         print(f"\n[{idx}/{len(counts)}] Running count={count}, qubits={qubits}")
 
-        algo = RNGAlgorithm(count=count, num_qubits=qubits, seed=args.seed)
-        result = algo.run_comparison(platforms=PLATFORMS, shots=args.shots)
-        raw_results.append(
-            {
-                "count": count,
-                "num_qubits": qubits,
-                "result": result,
-            }
-        )
+        if args.warmup > 0:
+            for warm_idx in range(1, args.warmup + 1):
+                warm_seed = args.seed + warm_idx - 1
+                warm_algo = RNGAlgorithm(count=count, num_qubits=qubits, seed=warm_seed)
+                _ = warm_algo.run_comparison(platforms=PLATFORMS, shots=args.shots)
+            print(f"  Warmup complete: {args.warmup} run(s) per platform")
 
-        for platform in PLATFORMS:
-            data = result.get("platforms", {}).get(platform, {})
-            row = extract_row(
-                run_idx=idx,
-                count=count,
-                planned_qubits=qubits,
-                platform=platform,
-                data=data,
+        for trial_idx in range(1, args.repeats + 1):
+            trial_seed = args.seed + trial_idx - 1
+            print(f"  Trial {trial_idx}/{args.repeats} (seed={trial_seed})")
+
+            algo = RNGAlgorithm(count=count, num_qubits=qubits, seed=trial_seed)
+            result = algo.run_comparison(platforms=PLATFORMS, shots=args.shots)
+            raw_results.append(
+                {
+                    "count": count,
+                    "num_qubits": qubits,
+                    "trial_index": trial_idx,
+                    "seed": trial_seed,
+                    "phase": "measured",
+                    "result": result,
+                }
             )
-            rows.append(row)
-            if row["success"]:
-                print(
-                    f"  [OK] {platform}: time={row['execution_time_s']:.6f}s "
-                    f"rate={row['throughput_numbers_per_s']:.2f}/s"
-                )
-            else:
-                print(f"  [FAIL] {platform}: {row['error']}")
 
-    summary = build_summary(rows, counts)
+            for platform in PLATFORMS:
+                data = result.get("platforms", {}).get(platform, {})
+                row = extract_row(
+                    run_idx=idx,
+                    trial_idx=trial_idx,
+                    count=count,
+                    planned_qubits=qubits,
+                    platform=platform,
+                    data=data,
+                )
+                row["included_in_analysis"] = bool(
+                    args.include_fallback or not row.get("is_fallback", False)
+                )
+                rows.append(row)
+                if row["success"]:
+                    fallback_note = " [FALLBACK]" if row.get("is_fallback") else ""
+                    print(
+                        f"    [OK] {platform}: time={row['execution_time_s']:.6f}s "
+                        f"rate={row['throughput_numbers_per_s']:.2f}/s "
+                        f"backend={row.get('backend_type', 'unknown')}{fallback_note}"
+                    )
+                else:
+                    print(f"    [FAIL] {platform}: {row['error']}")
+
+    rows_for_analysis = analysis_rows(rows, include_fallback=args.include_fallback)
+    summary = build_summary(rows, counts, include_fallback=args.include_fallback)
 
     (out_dir / "raw_runs.json").write_text(
         json.dumps(
@@ -464,6 +590,14 @@ def run(args: argparse.Namespace) -> int:
                     "max_qubits": args.max_qubits,
                     "shots": args.shots,
                     "seed": args.seed,
+                    "repeats": args.repeats,
+                    "warmup": args.warmup,
+                    "include_fallback": args.include_fallback,
+                },
+                "analysis": {
+                    "rows_total": len(rows),
+                    "rows_analyzed": len(rows_for_analysis),
+                    "rows_excluded_as_fallback": len(rows) - len(rows_for_analysis),
                 },
                 "runs": raw_results,
             },
@@ -479,6 +613,9 @@ def run(args: argparse.Namespace) -> int:
         counts=counts,
         qubit_mode=args.qubit_mode,
         shots=args.shots,
+        repeats=args.repeats,
+        warmup=args.warmup,
+        include_fallback=args.include_fallback,
         rows=rows,
         summary=summary,
     )
@@ -488,8 +625,8 @@ def run(args: argparse.Namespace) -> int:
     elif plt is None:
         print("\nSkipping plots (matplotlib is not installed).")
     else:
-        plot_execution_time(rows, out_dir / "execution_time_vs_count.png")
-        plot_resource_efficiency(rows, out_dir / "resource_efficiency.png")
+        plot_execution_time(rows_for_analysis, out_dir / "execution_time_vs_count.png")
+        plot_resource_efficiency(rows_for_analysis, out_dir / "resource_efficiency.png")
 
     print("\nCompleted.")
     print(f"Artifacts written to: {out_dir}")
@@ -520,6 +657,23 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--shots", type=int, default=1024, help="Quantum measurement shots.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
     parser.add_argument(
+        "--repeats",
+        type=int,
+        default=10,
+        help="Number of measured repeats per workload (used for mean/std/CI).",
+    )
+    parser.add_argument(
+        "--warmup",
+        type=int,
+        default=2,
+        help="Number of warmup runs per workload before measured repeats.",
+    )
+    parser.add_argument(
+        "--include-fallback",
+        action="store_true",
+        help="Include fallback runs (e.g., GPU CPU-fallback) in analysis metrics.",
+    )
+    parser.add_argument(
         "--output-dir",
         type=str,
         default="",
@@ -532,7 +686,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-    return run(args)
+    try:
+        return run(args)
+    except ValueError as exc:
+        print(f"Argument error: {exc}")
+        return 2
 
 
 if __name__ == "__main__":
