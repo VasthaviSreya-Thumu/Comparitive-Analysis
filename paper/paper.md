@@ -49,13 +49,13 @@ For each platform and workload, measured runs are repeated (`--repeats`) after w
 - 95% CI using normal approximation:
 
 $$
-\text{CI}_{95\%} = \bar{x} \pm 1.96\cdot\frac{s}{\sqrt{n}}.
+\mathrm{CI}_{95\%} = \bar{x} \pm 1.96 \frac{s}{\sqrt{n}}
 $$
 
 Speedup is computed from mean timings:
 
 $$
-\text{Speedup}_{A\leftarrow B}(N)=\frac{T_A(N)}{T_B(N)}.
+\mathrm{Speedup}_{A \to B}(N) = \frac{T_A(N)}{T_B(N)}
 $$
 
 Where sample sizes permit, Welch's two-sample t-test is computed for pairwise timing comparisons (`paper/tables/table_significance_welch_ttest.csv`).
