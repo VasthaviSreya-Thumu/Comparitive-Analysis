@@ -1,0 +1,5 @@
+experiment_id,path,purpose
+paper_main,results/reports/paper_main,Primary results used in manuscript
+paper_ablation_include_fallback,results/reports/paper_ablation_include_fallback,Ablation: include fallback runs
+paper_ablation_fixedq,results/reports/paper_ablation_fixedq,Ablation: fixed qubits instead of logn
+focus_rng_20260324_024923,results/reports/focus_rng_20260324_024923,Negative result: missing qiskit dependency

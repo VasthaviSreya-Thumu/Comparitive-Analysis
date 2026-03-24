@@ -1,0 +1,118 @@
+{
+  "analysis": {
+    "include_fallback": true,
+    "rows_total": 75,
+    "rows_analyzed": 75,
+    "rows_excluded_as_fallback": 0
+  },
+  "platforms": {
+    "CPU": {
+      "runs_total": 25,
+      "runs_analyzed": 25,
+      "runs_success": 25,
+      "runs_failed": 0,
+      "fallback_runs_total": 0,
+      "fallback_runs_excluded": 0,
+      "mean_time_s": 4.0830520010786134e-05,
+      "median_time_s": 4.018099934910424e-05,
+      "std_time_s": 3.973933415691891e-06,
+      "ci95_time_s_low": 3.927273811183491e-05,
+      "ci95_time_s_high": 4.238830190973736e-05,
+      "mean_throughput_numbers_per_s": 9493949.078823807,
+      "median_throughput_numbers_per_s": 6772665.946526457,
+      "std_throughput_numbers_per_s": 8198681.019949589,
+      "ci95_throughput_numbers_per_s_low": 6280066.119003568,
+      "ci95_throughput_numbers_per_s_high": 12707832.038644046,
+      "best_throughput_numbers_per_s": 25122052.63994493,
+      "mean_peak_memory_mb": 330.2315625,
+      "empirical_time_exponent": 0.030426696177833546,
+      "backend_types": [
+        "cpu"
+      ],
+      "notes": [
+        "CPU"
+      ]
+    },
+    "GPU": {
+      "runs_total": 25,
+      "runs_analyzed": 25,
+      "runs_success": 25,
+      "runs_failed": 0,
+      "fallback_runs_total": 25,
+      "fallback_runs_excluded": 0,
+      "mean_time_s": 2.880896019632928e-05,
+      "median_time_s": 2.495400076441001e-05,
+      "std_time_s": 9.646676979955208e-06,
+      "ci95_time_s_low": 2.5027462820186838e-05,
+      "ci95_time_s_high": 3.259045757247172e-05,
+      "mean_throughput_numbers_per_s": 12971660.851426361,
+      "median_throughput_numbers_per_s": 10659560.79881693,
+      "std_throughput_numbers_per_s": 10587365.111216195,
+      "ci95_throughput_numbers_per_s_low": 8821413.727829613,
+      "ci95_throughput_numbers_per_s_high": 17121907.97502311,
+      "best_throughput_numbers_per_s": 35833012.3195881,
+      "mean_peak_memory_mb": 330.2315625,
+      "empirical_time_exponent": 0.17461757665788202,
+      "backend_types": [
+        "cpu-fallback"
+      ],
+      "notes": [
+        "GPU"
+      ]
+    },
+    "QPU": {
+      "runs_total": 25,
+      "runs_analyzed": 25,
+      "runs_success": 25,
+      "runs_failed": 0,
+      "fallback_runs_total": 0,
+      "fallback_runs_excluded": 0,
+      "mean_time_s": 0.1283845249201113,
+      "median_time_s": 0.1271277440009726,
+      "std_time_s": 0.00512041544831772,
+      "ci95_time_s_low": 0.12637732206437075,
+      "ci95_time_s_high": 0.13039172777585184,
+      "mean_throughput_numbers_per_s": 3106.5641433051846,
+      "median_throughput_numbers_per_s": 2018.7581270316205,
+      "std_throughput_numbers_per_s": 2821.0312546226223,
+      "ci95_throughput_numbers_per_s_low": 2000.7198914931166,
+      "ci95_throughput_numbers_per_s_high": 4212.408395117252,
+      "best_throughput_numbers_per_s": 8256.149156059455,
+      "mean_peak_memory_mb": 330.25125,
+      "empirical_time_exponent": -0.0023854762669620745,
+      "backend_types": [
+        "simulator"
+      ],
+      "notes": [
+        "QPU"
+      ]
+    }
+  },
+  "speedups_vs_cpu": {
+    "64": {
+      "GPU": 1.7206567438756246,
+      "QPU": 0.0003110738975668503
+    },
+    "128": {
+      "GPU": 1.6020329794176094,
+      "QPU": 0.00030866540225804275
+    },
+    "256": {
+      "GPU": 1.4112298019206877,
+      "QPU": 0.0003095171071981503
+    },
+    "512": {
+      "GPU": 1.4788892482685114,
+      "QPU": 0.0003176968619528798
+    },
+    "1024": {
+      "GPU": 1.0865087812501457,
+      "QPU": 0.00034354871244968117
+    }
+  },
+  "qpu_qubit_scaling": {
+    "mean_qubits": 8.0,
+    "mean_log2_count": 8.0,
+    "mean_qubits_to_log2_count_ratio": 1.0
+  }
+}
