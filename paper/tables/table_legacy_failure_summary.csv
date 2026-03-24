@@ -1,0 +1,4 @@
+platform,runs_total,runs_success,runs_failed,mean_time_s
+CPU,4,4,0,4.9349248911312316e-05
+GPU,4,4,0,3.790224945987575e-05
+QPU,4,0,4,

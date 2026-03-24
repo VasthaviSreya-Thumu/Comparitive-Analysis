@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360">
+<style>
+.box{fill:#f5f7fb;stroke:#2b3a67;stroke-width:2;rx:8;ry:8}
+.txt{font-family:Arial,sans-serif;font-size:16px;fill:#1a1a1a}
+.arrow{stroke:#2b3a67;stroke-width:2;marker-end:url(#m)}
+</style>
+<defs><marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2b3a67"/></marker></defs>
+<rect class="box" x="30" y="120" width="190" height="110"/><text class="txt" x="50" y="155">CLI / Streamlit</text><text class="txt" x="50" y="180">Parameter setup</text>
+<rect class="box" x="270" y="120" width="220" height="110"/><text class="txt" x="290" y="155">RNGAlgorithm</text><text class="txt" x="290" y="180">CPU/GPU/QPU dispatch</text>
+<rect class="box" x="540" y="50" width="180" height="90"/><text class="txt" x="560" y="95">CPU path</text><text class="txt" x="560" y="118">NumPy RNG</text>
+<rect class="box" x="540" y="150" width="180" height="90"/><text class="txt" x="560" y="195">GPU path</text><text class="txt" x="560" y="218">PyTorch / fallback</text>
+<rect class="box" x="540" y="250" width="180" height="90"/><text class="txt" x="560" y="295">QPU path</text><text class="txt" x="560" y="318">Qiskit Aer/IBM</text>
+<rect class="box" x="790" y="120" width="190" height="110"/><text class="txt" x="810" y="155">Aggregator</text><text class="txt" x="810" y="180">CI, speedups, scaling</text>
+<rect class="box" x="1020" y="120" width="150" height="110"/><text class="txt" x="1038" y="155">Artifacts</text><text class="txt" x="1038" y="180">CSV/JSON/MD/PNG</text>
+<line class="arrow" x1="220" y1="175" x2="270" y2="175"/>
+<line class="arrow" x1="490" y1="175" x2="540" y2="95"/>
+<line class="arrow" x1="490" y1="175" x2="540" y2="195"/>
+<line class="arrow" x1="490" y1="175" x2="540" y2="295"/>
+<line class="arrow" x1="720" y1="95" x2="790" y2="175"/>
+<line class="arrow" x1="720" y1="195" x2="790" y2="175"/>
+<line class="arrow" x1="720" y1="295" x2="790" y2="175"/>
+<line class="arrow" x1="980" y1="175" x2="1020" y2="175"/>
+</svg>

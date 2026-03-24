@@ -1,0 +1,3 @@
+qubit_mode,mean_qubits,mean_log2_count,mean_qubits_to_log2_count_ratio,qpu_mean_time_s,qpu_std_time_s
+logn,8.0,8.0,1.0,0.12995517476017995,0.009362689790795485
+fixed,10.0,8.0,1.2912698412698413,0.1283927598001901,0.013514329674410401

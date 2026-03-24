@@ -1,0 +1,109 @@
+{
+  "analysis": {
+    "include_fallback": false,
+    "rows_total": 75,
+    "rows_analyzed": 50,
+    "rows_excluded_as_fallback": 25
+  },
+  "platforms": {
+    "CPU": {
+      "runs_total": 25,
+      "runs_analyzed": 25,
+      "runs_success": 25,
+      "runs_failed": 0,
+      "fallback_runs_total": 0,
+      "fallback_runs_excluded": 0,
+      "mean_time_s": 3.972952021285891e-05,
+      "median_time_s": 3.726200156961568e-05,
+      "std_time_s": 6.669267969767997e-06,
+      "ci95_time_s_low": 3.711516716870986e-05,
+      "ci95_time_s_high": 4.234387325700797e-05,
+      "mean_throughput_numbers_per_s": 9697871.132786851,
+      "median_throughput_numbers_per_s": 7023512.185832853,
+      "std_throughput_numbers_per_s": 8353693.393456953,
+      "ci95_throughput_numbers_per_s_low": 6423223.322551726,
+      "ci95_throughput_numbers_per_s_high": 12972518.943021975,
+      "best_throughput_numbers_per_s": 25248415.293311622,
+      "mean_peak_memory_mb": 330.231875,
+      "empirical_time_exponent": 0.058048787922858794,
+      "backend_types": [
+        "cpu"
+      ],
+      "notes": [
+        "CPU"
+      ]
+    },
+    "GPU": {
+      "runs_total": 25,
+      "runs_analyzed": 0,
+      "runs_success": 0,
+      "runs_failed": 0,
+      "fallback_runs_total": 25,
+      "fallback_runs_excluded": 25,
+      "mean_time_s": null,
+      "median_time_s": null,
+      "std_time_s": null,
+      "ci95_time_s_low": null,
+      "ci95_time_s_high": null,
+      "mean_throughput_numbers_per_s": null,
+      "median_throughput_numbers_per_s": null,
+      "std_throughput_numbers_per_s": null,
+      "ci95_throughput_numbers_per_s_low": null,
+      "ci95_throughput_numbers_per_s_high": null,
+      "best_throughput_numbers_per_s": null,
+      "mean_peak_memory_mb": null,
+      "empirical_time_exponent": null,
+      "backend_types": [],
+      "notes": []
+    },
+    "QPU": {
+      "runs_total": 25,
+      "runs_analyzed": 25,
+      "runs_success": 25,
+      "runs_failed": 0,
+      "fallback_runs_total": 0,
+      "fallback_runs_excluded": 0,
+      "mean_time_s": 0.12995517476017995,
+      "median_time_s": 0.12817226300103357,
+      "std_time_s": 0.009362689790795485,
+      "ci95_time_s_low": 0.12628500036218812,
+      "ci95_time_s_high": 0.13362534915817179,
+      "mean_throughput_numbers_per_s": 3074.089031264808,
+      "median_throughput_numbers_per_s": 2043.8448796939379,
+      "std_throughput_numbers_per_s": 2762.3979913208746,
+      "ci95_throughput_numbers_per_s_low": 1991.2290186670252,
+      "ci95_throughput_numbers_per_s_high": 4156.949043862591,
+      "best_throughput_numbers_per_s": 8165.255196504921,
+      "mean_peak_memory_mb": 330.250625,
+      "empirical_time_exponent": -0.01333831867232413,
+      "backend_types": [
+        "simulator"
+      ],
+      "notes": [
+        "QPU"
+      ]
+    }
+  },
+  "speedups_vs_cpu": {
+    "64": {
+      "QPU": 0.0002773522162196949
+    },
+    "128": {
+      "QPU": 0.0002860102140538021
+    },
+    "256": {
+      "QPU": 0.00030338523068028323
+    },
+    "512": {
+      "QPU": 0.00033356076822057586
+    },
+    "1024": {
+      "QPU": 0.0003289146603757065
+    }
+  },
+  "qpu_qubit_scaling": {
+    "mean_qubits": 8.0,
+    "mean_log2_count": 8.0,
+    "mean_qubits_to_log2_count_ratio": 1.0
+  }
+}
